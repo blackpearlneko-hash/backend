@@ -101,4 +101,24 @@ router.get("/productdet", async (req, res) => {
     }
 });
 
+router.get("/bestproduct", async (req, res) => {
+    try {
+        const products = await pd
+            .find()
+            .sort({ bestsellerQuantity: -1 }) 
+            .limit(6);                         
+
+        res.status(200).json({
+            success: true,
+            data: products
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+
 module.exports = router;
