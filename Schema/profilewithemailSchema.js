@@ -2,9 +2,8 @@ const mongoose = require('mongoose');
 
 const profileWithEmailSchema = new mongoose.Schema(
     {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         email: { type: String, required: true },
-       Name: { type: String, required: true },
+       name: { type: String, required: true },
        phone: { type: String },
         address: {
             street: { type: String },
