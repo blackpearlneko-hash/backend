@@ -3,6 +3,7 @@ const router = express.Router();
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
 const ProfileWithEmail = require("../Schema/profilewithemailSchema");
+const authMiddleware = require("../middleware/funauthmiddle");
 
 const client = new OAuth2Client(process.env.GOOGLE_WEB_CLIENT_ID);
 
@@ -52,15 +53,22 @@ console.log("Verifying ID Token with Google...");
     );
     console.log("JWT created successfully");
 
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure:  true,
+      sameSite: "none",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
     // 4️⃣ ALWAYS return name & email (existing OR new)
     res.status(200).json({
       success: true,
-      token,
       user: {
         name: profile.name,
         email: profile.email,
       },
     });
+    console.log("http only cookie set: response sent");
     console.log("Response sent successfully");
 
   } catch (error) {
@@ -68,5 +76,21 @@ console.log("Verifying ID Token with Google...");
     res.status(401).json({ message: "Invalid Google token" });
   }
 });
+
+
+router.get("/me", authMiddleware,async (req, res) => {
+  res.json({ user: req.user });
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  res.json({ message: "Logged out successfully" });
+});
+
+ 
 
 module.exports = router;

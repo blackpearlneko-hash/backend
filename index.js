@@ -2,23 +2,24 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/mongodb");
+const cookieParser = require("cookie-parser");
 
 const productapi = require("./homeRoute/ProductRoute");
 const authroute = require("./homeRoute/profileRoute");
 
 const app = express();
 
-// ✅ CORS — ONLY ONCE, BEFORE ROUTES
 app.use(cors({
-    origin: "*", // This replaces the list of URLs and allows everything
+origin: "https://blackpearlneko-hash.github.io",
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 
-// app.options(/.*/, cors());
 
 app.use(express.json());
+app.use(cookieParser());
 connectDB();
 
 
