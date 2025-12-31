@@ -121,6 +121,48 @@ router.get("/productdet", async (req, res) => {
 
 
 
+router.get("/productdetail", async (req, res) => {
+    try {
+        const { name } = req.query;
+
+        if (!name) {
+            return res.status(400).json({
+                success: false,
+                message: "Product name is required"
+            });
+        }
+
+        const product = await pd.findOne(
+            { Prodtname: name },
+            {
+                Prodtname: 1,
+                Prodtprice: 1,
+                Prodtdescription: 1,
+                Productimg: 1
+            }
+        ).lean();
+
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: product
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+
 router.get("/bestproduct", async (req, res) => {
     try {
         const products = await pd
