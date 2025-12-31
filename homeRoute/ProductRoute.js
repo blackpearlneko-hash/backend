@@ -94,12 +94,32 @@ router.delete('/productdet/:Prodtname', async (req, res) => {
 // --- 5. GET Routes (Unchanged) ---
 router.get("/productdet", async (req, res) => {
     try {
-        const products = await pd.find();
+        const page = parseInt(req.query.page) || 1;
+        const limit = 6;
+        const skip = (page - 1) * limit;
+        console.log("Fetching products for page:", page);
+
+        const products = await pd
+            .find(
+                {},
+                {
+                    Prodtname: 1,
+                    Prodtprice: 1,
+                    Productimg: { $slice: 1 } // ✅ FIXED
+                }
+            )
+            .skip(skip)
+            .limit(limit)
+            .lean();
+            console.log("Products fetched:", products.length);
+
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
+
+
 
 router.get("/bestproduct", async (req, res) => {
     try {
